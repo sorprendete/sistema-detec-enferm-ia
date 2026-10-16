@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
+import RutaAdmin from './components/RutaAdmin.jsx'
 import RutaProtegida from './components/RutaProtegida.jsx'
+import Admin from './pages/Admin.jsx'
 import Diagnostico from './pages/Diagnostico.jsx'
 import Historial from './pages/Historial.jsx'
 import Login from './pages/Login.jsx'
@@ -18,6 +20,7 @@ export default function App() {
         <Route path="/diagnostico" element={<Diagnostico />} />
         <Route path="/historial" element={<Historial />} />
         <Route path="/modelo" element={<Modelo />} />
+        <Route path="/admin" element={<RutaAdmin><Admin /></RutaAdmin>} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

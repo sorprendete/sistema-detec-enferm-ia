@@ -1,4 +1,4 @@
-"""Configuración central leída desde variables de entorno (.env en local, Secrets en Hugging Face)."""
+"""Configuración central leída desde variables de entorno (.env en local, variables de entorno en Azure Container Apps)."""
 from functools import lru_cache
 from pathlib import Path
 
@@ -24,12 +24,19 @@ class Settings(BaseSettings):
     # Solo para proyectos con "Legacy JWT secret" (HS256). Si se deja vacío
     # se usan las claves públicas JWKS del proyecto (recomendado).
     supabase_jwt_secret: str = ""
+    # Clave secreta de servicio (service_role). Solo la usa el backend para escribir
+    # el registro de auditoría y para que el administrador active o desactive cuentas.
+    # NUNCA va en el frontend.
+    supabase_service_role_key: str = ""
 
     # Seguridad de la API
     cors_origins: str = "http://localhost:5173"  # separados por coma
     max_image_mb: float = 5.0
     max_image_pixels: int = 25_000_000  # evita "bombas de descompresión"
     rate_limit_por_minuto: int = 20
+    # Bloqueo por fuerza bruta: N intentos fallidos de un mismo correo en la ventana
+    login_max_fallos: int = 5
+    login_bloqueo_minutos: int = 15
 
     # Inferencia
     umbral_confianza: float = 0.75  # por debajo no se emite diagnóstico (resultado no concluyente)
@@ -46,6 +53,15 @@ class Settings(BaseSettings):
             if v.endswith(sufijo):
                 v = v[: -len(sufijo)]
         return v
+
+    @property
+    def cabeceras_servicio(self) -> dict:
+        k = self.supabase_service_role_key
+        # Las claves nuevas (sb_secret_...) van solo en "apikey"; la clave service_role
+        # clásica es un JWT y también se envía como Authorization.
+        if k.startswith("sb_secret_"):
+            return {"apikey": k}
+        return {"apikey": k, "Authorization": f"Bearer {k}"}
 
     @property
     def cors_lista(self) -> list[str]:

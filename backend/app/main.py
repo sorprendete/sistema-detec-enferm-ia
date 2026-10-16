@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import get_settings
-from app.routers import historial, prediccion, salud
+from app.routers import admin, auth, historial, prediccion, salud
 from app.services.modelo import cargar_modelo
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -49,6 +49,8 @@ async def cabeceras_seguridad(request: Request, call_next):
 app.include_router(salud.router)
 app.include_router(prediccion.router)
 app.include_router(historial.router)
+app.include_router(auth.router)
+app.include_router(admin.router)
 
 
 @app.get("/", include_in_schema=False)

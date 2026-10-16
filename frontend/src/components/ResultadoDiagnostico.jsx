@@ -10,7 +10,7 @@ function Trazabilidad({ r }) {
       <summary><ChevronRight size={15} className="chevron" /><Lock size={14} />Datos de seguridad y trazabilidad</summary>
       <p>SHA-256 de la imagen: <code>{r.imagen_sha256}</code></p>
       <p>SHA-256 del modelo verificado: <code>{r.modelo_sha256}</code></p>
-      <p className="tenue">Tiempo de análisis: {r.tiempo_ms} ms{r.servidor && ` · Atendido por: ${r.servidor}`}</p>
+      <p className="tenue">Tiempo de análisis: {r.tiempo_ms} ms</p>
     </details>
   )
 }

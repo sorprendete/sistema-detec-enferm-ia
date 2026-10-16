@@ -91,7 +91,6 @@ export default function Modelo() {
                   {salud.integridad_verificada ? <><CircleCheck size={13} />Modelo íntegro y cargado</> : <><CircleX size={13} />Modelo no cargado</>}
                 </span>
               )}
-              {salud?.servidor && <div className="tenue" style={{ marginTop: 4 }}>Responde: {salud.servidor}</div>}
             </div>
             {salud?.modelo_sha256 && <div><span className="tenue">SHA-256 del clasificador</span><br /><code>{salud.modelo_sha256}</code></div>}
             {salud?.filtro_sha256 && <div><span className="tenue">SHA-256 del filtro de cultivo</span><br /><code>{salud.filtro_sha256}</code></div>}

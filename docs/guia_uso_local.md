@@ -30,7 +30,8 @@ Pulsa **Create new project** y espera 1–2 minutos hasta que termine.
 2. Abre en el Bloc de notas `C:\laragon\www\Sistema_Detec_Enferm_IA\database\schema.sql`, copia **todo** y pégalo en el editor.
 3. Pulsa **Run** (o `Ctrl + Enter`). Debe decir **Success. No rows returned**.
 4. Borra el editor, pega todo `database\politicas_rls.sql` y pulsa **Run** de nuevo. Debe decir **Success**.
-5. Comprueba: menú izquierdo → **Table Editor**. Deben aparecer las tablas **analisis** y **perfiles**.
+5. Haz lo mismo con `database\administracion.sql` (roles de usuario y registro de auditoría).
+6. Comprueba: menú izquierdo → **Table Editor**. Deben aparecer las tablas **analisis**, **auditoria** y **perfiles**.
 
 ### Pantalla 4 · Configurar el login
 1. Menú izquierdo → **Authentication** → **URL Configuration**.
@@ -46,7 +47,19 @@ Menú izquierdo → **Project Settings** (engranaje) → **API Keys** / **Data A
 | **Project URL** | Project Settings → Data API (o arriba en "Connect") | `https://abcdxyz.supabase.co` |
 | **anon / publishable key** | Project Settings → API Keys (pestaña *Legacy API keys* → `anon public`, o la *Publishable key* `sb_publishable_...`) | `eyJhbGciOi...` o `sb_publishable_...` |
 
-⚠️ **No copies la `service_role` / `secret` key.** El sistema no la necesita y nunca debe ir en el frontend.
+| **service_role / secret key** | Project Settings → API Keys (*Legacy API keys* → `service_role`, o la *Secret key* `sb_secret_...`) | Solo para el `.env` del **backend** |
+
+**Importante:** la clave `service_role` / `secret` es muy sensible. Va **solo** en `backend\.env` (y en Azure como secreto), **nunca** en el frontend ni en GitHub. El backend la usa únicamente para escribir el registro de auditoría y para que el administrador active o desactive cuentas.
+
+### Pantalla 5b · Crear la cuenta de administrador (solo una)
+1. Menú izquierdo → **Authentication** → **Users** → **Add user** → **Create new user**.
+2. Escribe el correo y una contraseña segura del administrador, marca **Auto Confirm User** y pulsa **Create user**.
+3. **SQL Editor** → ejecuta esta línea con ese correo:
+   ```sql
+   update public.perfiles set rol = 'admin' where email = 'admin@tu-correo.com';
+   ```
+   Debe decir **Success. 1 rows affected**. El sistema solo permite **un** administrador: si intentas nombrar a otro, la base de datos lo rechaza.
+4. Al iniciar sesión con esa cuenta aparece en el menú **Administración → Usuarios y auditoría**.
 
 ---
 
@@ -64,6 +77,7 @@ En el Bloc de notas deja el archivo así (con **tus** valores):
 SUPABASE_URL=https://abcdxyz.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOi...tu_clave_anon...
 SUPABASE_JWT_SECRET=
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...tu_clave_service_role...
 CORS_ORIGINS=http://localhost:5173
 MAX_IMAGE_MB=5
 RATE_LIMIT_POR_MINUTO=20

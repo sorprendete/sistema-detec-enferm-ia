@@ -1,26 +1,7 @@
 import { supabase } from './supabase'
 
-const limpiar = (url) => (url || '').trim().replace(/\/$/, '')
-
-// Servidor principal (Azure Container Apps) y de respaldo (Hugging Face Spaces).
-// Si solo se define VITE_API_URL, el sistema funciona con un único servidor.
-const SERVIDORES = [
-  { nombre: 'Servidor principal', url: limpiar(import.meta.env.VITE_API_URL) || 'http://localhost:8000' },
-  { nombre: 'Servidor de respaldo', url: limpiar(import.meta.env.VITE_API_URL_RESPALDO) },
-].filter((s, i, lista) => s.url && lista.findIndex((o) => o.url === s.url) === i)
-
-// Tiempo máximo de espera de un servidor antes de pasar al otro
-const ESPERA_MS = 20000
-// Respuestas que indican servidor caído, reiniciando o dormido: se prueba el otro
-const ESTADOS_REINTENTO = new Set([502, 503, 504])
-
-// Si el principal falla se usa el respaldo durante 5 minutos y luego se vuelve a probar el principal
-const VOLVER_AL_PRINCIPAL_MS = 5 * 60 * 1000
-let preferido = 0
-let desde = 0
-let ultimoAtendido = null
-
-export const servidorAtendido = () => ultimoAtendido
+// Backend en Azure Container Apps (o http://localhost:8000 en local)
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 async function tokenActual() {
   const { data } = await supabase.auth.getSession()
@@ -29,62 +10,51 @@ async function tokenActual() {
   return token
 }
 
-async function conEspera(url, opciones, ms) {
-  const control = new AbortController()
-  const reloj = ms ? setTimeout(() => control.abort(), ms) : null
-  try {
-    return await fetch(url, { ...opciones, signal: control.signal })
-  } finally {
-    if (reloj) clearTimeout(reloj)
-  }
-}
-
-// Recorre los servidores empezando por el preferido (normalmente el principal).
-// El último de la lista espera sin límite (puede estar despertando).
-async function solicitar(ruta, opciones = {}) {
-  if (preferido !== 0 && Date.now() - desde > VOLVER_AL_PRINCIPAL_MS) preferido = 0
-  const orden = SERVIDORES.map((_, i) => (preferido + i) % SERVIDORES.length)
-  let error
-  for (const [paso, i] of orden.entries()) {
-    const esUltimo = paso === orden.length - 1
-    try {
-      const resp = await conEspera(`${SERVIDORES[i].url}${ruta}`, opciones, esUltimo ? 0 : ESPERA_MS)
-      if (!esUltimo && ESTADOS_REINTENTO.has(resp.status)) continue
-      if (i !== preferido) desde = Date.now()
-      preferido = i
-      ultimoAtendido = SERVIDORES[i].nombre
-      return resp
-    } catch (e) {
-      error = e
-    }
-  }
-  throw error || new Error('Sin servidores configurados')
-}
-
-async function pedir(ruta, opciones = {}) {
-  const token = await tokenActual()
+async function pedir(ruta, opciones = {}, { publico = false } = {}) {
+  const headers = { ...(opciones.headers || {}) }
+  if (!publico) headers.Authorization = `Bearer ${await tokenActual()}`
   let resp
   try {
-    resp = await solicitar(ruta, {
-      ...opciones,
-      headers: { ...(opciones.headers || {}), Authorization: `Bearer ${token}` },
-    })
+    resp = await fetch(`${API_URL}${ruta}`, { ...opciones, headers })
   } catch {
-    throw new Error('No se pudo conectar con el servidor. Si estuvo inactivo, puede tardar ~1 minuto en despertar.')
+    throw new Error('No se pudo conectar con el servidor. Si estuvo inactivo, puede tardar alrededor de un minuto en arrancar; inténtalo de nuevo.')
   }
   const datos = await resp.json().catch(() => ({}))
   if (!resp.ok) {
-    if (resp.status === 401) await supabase.auth.signOut()
-    throw new Error(datos.detail || `Error ${resp.status}`)
+    if (resp.status === 401 && !publico) await supabase.auth.signOut()
+    throw new Error(mensajeError(datos.detail) || `Error ${resp.status}`)
   }
   return datos
 }
 
-export async function analizarImagen(archivo) {
+// FastAPI devuelve una lista cuando falla la validación de los datos enviados
+function mensajeError(detalle) {
+  if (Array.isArray(detalle)) return detalle.map((d) => String(d.msg || '').replace(/^Value error, /, '')).join('. ')
+  return detalle
+}
+
+const json = (cuerpo) => ({ method: 'POST', body: JSON.stringify(cuerpo), headers: { 'Content-Type': 'application/json' } })
+
+// ----- Autenticación (pasa por el backend para quedar auditada) -----
+export const login = (email, password) => pedir('/auth/login', json({ email, password }), { publico: true })
+export const registro = (nombre, email, password) => pedir('/auth/registro', json({ nombre, email, password }), { publico: true })
+export const logout = () => pedir('/auth/logout', { method: 'POST' }).catch(() => {})
+
+// ----- Administración (solo rol admin) -----
+export const adminResumen = () => pedir('/admin/resumen')
+export const adminUsuarios = () => pedir('/admin/usuarios')
+export function adminAuditoria({ accion = '', estado = '', limite = 100, desde = 0 } = {}) {
+  const q = new URLSearchParams({ limite, desde })
+  if (accion) q.set('accion', accion)
+  if (estado) q.set('estado', estado)
+  return pedir(`/admin/auditoria?${q}`)
+}
+export const adminCambiarEstado = (id, activo) => pedir(`/admin/usuarios/${id}/estado`, json({ activo }))
+
+export function analizarImagen(archivo) {
   const form = new FormData()
   form.append('imagen', archivo)
-  const datos = await pedir('/predict', { method: 'POST', body: form })
-  return { ...datos, servidor: ultimoAtendido }
+  return pedir('/predict', { method: 'POST', body: form })
 }
 
 export function obtenerHistorial(limite = 50) {
@@ -92,6 +62,6 @@ export function obtenerHistorial(limite = 50) {
 }
 
 export async function estadoServidor() {
-  const r = await solicitar('/health')
-  return { ...(await r.json()), servidor: ultimoAtendido }
+  const r = await fetch(`${API_URL}/health`)
+  return r.json()
 }
