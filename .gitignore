@@ -1,0 +1,25 @@
+# Secretos
+.env
+.env.local
+.env.*.local
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+.vercel/
+
+# Entrenamiento (datasets pesados)
+entrenamiento/dataset/
+entrenamiento/salidas/
+entrenamiento/dataset_filtro/
+
+# Sistema
+.DS_Store
+Thumbs.db

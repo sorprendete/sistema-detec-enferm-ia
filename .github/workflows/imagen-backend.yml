@@ -1,0 +1,45 @@
+# Construye la imagen Docker del backend y la publica gratis en GitHub Container Registry
+# (ghcr.io). Azure Container Apps descarga esta imagen. Se ejecuta al cambiar backend/
+# o manualmente desde la pestaña Actions -> "Imagen del backend" -> Run workflow.
+name: Imagen del backend
+
+on:
+  push:
+    branches: [main]
+    paths: ["backend/**", ".github/workflows/imagen-backend.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true # los modelos .keras están en Git LFS
+
+      - name: Comprobar integridad del modelo antes de publicar
+        working-directory: backend/modelo
+        run: |
+          echo "$(cat modelo_hash.txt | tr -d '[:space:]')  modelo_plantas.keras" | sha256sum -c -
+          echo "$(cat filtro_hash.txt | tr -d '[:space:]')  filtro_cultivos.keras" | sha256sum -c -
+
+      - name: Nombre de la imagen en minúsculas
+        run: echo "IMAGEN=ghcr.io/${GITHUB_REPOSITORY,,}-backend" >> "$GITHUB_ENV"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: true
+          tags: |
+            ${{ env.IMAGEN }}:latest
+            ${{ env.IMAGEN }}:${{ github.sha }}
