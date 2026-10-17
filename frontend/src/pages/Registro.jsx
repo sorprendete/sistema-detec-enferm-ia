@@ -1,7 +1,7 @@
 import { Check, Circle, CircleAlert, LoaderCircle, LockKeyhole, Mail, MailCheck, User, UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import AuthHero from '../components/AuthHero.jsx'
+import AuthHero, { MarcaMovil } from '../components/AuthHero.jsx'
 import Campo from '../components/Campo.jsx'
 import InterruptorTema from '../components/InterruptorTema.jsx'
 import { useAuth } from '../context/AuthContext'
@@ -47,7 +47,7 @@ export default function Registro() {
     <div className="auth">
       <AuthHero />
       <div className="auth-form">
-        <InterruptorTema />
+        <div className="auth-barra"><MarcaMovil /><InterruptorTema /></div>
         {listo ? (
           <div className="formulario auth-tarjeta">
             <div className="auth-cabecera">

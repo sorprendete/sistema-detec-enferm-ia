@@ -67,14 +67,14 @@ export default function Historial() {
             <option value="dudosa">Baja certeza</option>
             <option value="no_concluyente">No concluyentes</option>
           </select>
-          {filas && <span className="tenue" style={{ alignSelf: 'center' }}>{visibles.length} de {filas.length} registros</span>}
+          {filas && <span className="tenue filtros-total">{visibles.length} de {filas.length} registros</span>}
         </div>
 
         {error && <p className="error">{error}</p>}
         {!filas && !error && <p className="vacio">Cargando…</p>}
         {filas && visibles.length === 0 && <p className="vacio">No hay análisis con esos filtros.</p>}
         {visibles.length > 0 && (
-          <div className="tabla-scroll">
+          <div className="tabla-scroll tabla-tarjetas">
             <table>
               <thead>
                 <tr><th>Fecha</th><th>Cultivo</th><th>Diagnóstico</th><th>Estado</th><th className="num">Confianza</th><th>Imagen (SHA-256)</th></tr>
@@ -84,10 +84,12 @@ export default function Historial() {
                   const info = infoClase(f.clase)
                   return (
                     <tr key={f.id}>
-                      <td>{new Date(f.created_at).toLocaleString('es')}</td>
-                      <td>{cultivoDe(f)}</td>
-                      <td>{info.nombre}</td>
-                      <td>
+                      <td data-label="Fecha">{new Date(f.created_at).toLocaleString('es')}</td>
+                      <td className="oculta-movil" data-label="Cultivo">{cultivoDe(f)}</td>
+                      <td className="celda-principal" data-label="Diagnóstico">
+                        <span><span className="solo-movil">{cultivoDe(f)} · </span>{info.nombre}</span>
+                      </td>
+                      <td data-label="Estado">
                         {esNoConcluyente(f) ? (
                           <span className="badge neutro"><CircleHelp size={13} />Sin diagnóstico</span>
                         ) : (
@@ -99,8 +101,8 @@ export default function Historial() {
                           </>
                         )}
                       </td>
-                      <td className="num">{pct(f.confianza)}</td>
-                      <td><code title={f.imagen_sha256}>{f.imagen_sha256.slice(0, 16)}…</code></td>
+                      <td className="num" data-label="Confianza">{pct(f.confianza)}</td>
+                      <td data-label="Imagen"><code title={f.imagen_sha256}>{f.imagen_sha256.slice(0, 16)}…</code></td>
                     </tr>
                   )
                 })}

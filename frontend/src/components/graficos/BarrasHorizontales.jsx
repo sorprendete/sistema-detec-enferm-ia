@@ -13,7 +13,10 @@ export default function BarrasHorizontales({
   const W = useAncho(ref)
 
   const anchoValor = 56
-  const x0 = anchoEtiqueta
+  // En pantallas angostas la columna de etiquetas se reduce y los textos largos se recortan
+  const x0 = Math.min(anchoEtiqueta, Math.round(W * 0.46))
+  const maxCar = Math.floor((x0 - 12) / 6.4)
+  const corta = (t) => (t.length > maxCar ? `${t.slice(0, maxCar - 1).trimEnd()}…` : t)
   const ancho = W - x0 - anchoValor
   const eje = marcasEje(Math.max(1, ...datos.map((d) => d.valor)))
   const tope = max ?? eje.tope
@@ -21,16 +24,18 @@ export default function BarrasHorizontales({
   const paso = altoBarra + separacion
   const H = datos.length * paso + 22
   const marcas = ticks ?? (max != null ? [0, 0.25, 0.5, 0.75, 1].map((t) => t * tope) : eje.marcas)
+  // Si no caben, se muestra una marca del eje sí y otra no
+  const salto = Math.ceil(44 / Math.max(1, ancho / Math.max(1, marcas.length - 1)))
 
   if (!datos.length) return <div ref={ref}><p className="vacio">Sin datos todavía.</p></div>
 
   return (
     <div className="grafico" ref={ref} onMouseLeave={() => { ocultar(); setActivo(null) }}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Gráfico de barras">
-        {marcas.map((t) => (
+        {marcas.map((t, i) => (
           <g key={t}>
             <line className="g-rejilla" x1={x0 + escala(t)} x2={x0 + escala(t)} y1={0} y2={H - 20} />
-            <text className="g-eje" x={x0 + escala(t)} y={H - 4} textAnchor="middle">{formato(t)}</text>
+            {i % salto === 0 && <text className="g-eje" x={x0 + escala(t)} y={H - 4} textAnchor="middle">{formato(t)}</text>}
           </g>
         ))}
         <line className="g-base" x1={x0} x2={x0} y1={0} y2={H - 20} />
@@ -45,7 +50,7 @@ export default function BarrasHorizontales({
           const r = Math.min(4, w / 2, altoBarra / 2)
           return (
             <g key={d.id ?? d.etiqueta}>
-              <text className="g-etiqueta" x={x0 - 10} y={y + altoBarra / 2 + 4} textAnchor="end">{d.etiqueta}</text>
+              <text className="g-etiqueta" x={x0 - 10} y={y + altoBarra / 2 + 4} textAnchor="end">{corta(d.etiqueta)}</text>
               {/* Extremo de datos redondeado (4px), anclado a la línea base */}
               <path
                 className={`g-barra ${activo != null && activo !== i ? 'atenuada' : ''}`}

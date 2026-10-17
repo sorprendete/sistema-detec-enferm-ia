@@ -1,7 +1,7 @@
 import { CircleAlert, LoaderCircle, LockKeyhole, LogIn, Mail, ShieldCheck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
-import AuthHero from '../components/AuthHero.jsx'
+import AuthHero, { MarcaMovil } from '../components/AuthHero.jsx'
 import Campo from '../components/Campo.jsx'
 import InterruptorTema from '../components/InterruptorTema.jsx'
 import { useAuth } from '../context/AuthContext'
@@ -36,7 +36,7 @@ export default function Login() {
     <div className="auth">
       <AuthHero />
       <div className="auth-form">
-        <InterruptorTema />
+        <div className="auth-barra"><MarcaMovil /><InterruptorTema /></div>
         <form className="formulario auth-tarjeta" onSubmit={enviar}>
           <div className="auth-cabecera">
             <span className="auth-sello"><LockKeyhole size={22} /></span>

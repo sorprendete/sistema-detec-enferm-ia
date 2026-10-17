@@ -157,7 +157,7 @@ Guarda con **Create** (genera una revisión nueva).
 
 ### 4.3 Secretos
 
-1. **Settings → Secrets → Add**: nombre `supabase-service-role`, valor tu clave service_role → **Add**.
+1. **Seguridad → Secretos → + Agregar** (en inglés: **Security → Secrets → Add**): clave `supabase-service-role`, tipo "Secreto de Container Apps", valor tu clave secreta → **Agregar**.
 2. Solo si usas Legacy JWT secret: **Add** otro con nombre `supabase-jwt-secret` y ese secreto.
 3. **Application → Containers → Edit and deploy** → selecciona el contenedor → **Environment variables → Add**:
    - Nombre `SUPABASE_SERVICE_ROLE_KEY`, Source **Reference a secret**, valor `supabase-service-role`.

@@ -1,6 +1,16 @@
 import { Fingerprint, Leaf, ScanSearch, ShieldCheck } from 'lucide-react'
 import { RESUMEN } from '../data/metricas'
 
+// Logo que solo se ve en celulares, encima del formulario (allí el panel verde queda debajo)
+export function MarcaMovil() {
+  return (
+    <div className="logo auth-marca-movil">
+      <span className="logo-icono"><Leaf size={18} strokeWidth={2.2} /></span>
+      <span><strong>FitoScan</strong><small>Detección segura con IA</small></span>
+    </div>
+  )
+}
+
 export default function AuthHero() {
   return (
     <section className="auth-hero">

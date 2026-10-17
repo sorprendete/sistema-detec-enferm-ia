@@ -12,6 +12,8 @@ export default function Columnas({ datos, nombreValor = 'Análisis' }) {
   const paso = (W - izq) / datos.length
   const anchoCol = Math.min(28, paso * 0.62)
   const y = (v) => arriba + alto - (v / tope) * alto
+  // Cada cuántas columnas se escribe la fecha (contando desde la última, que siempre aparece)
+  const cadaCuantas = Math.max(1, Math.ceil(datos.length / Math.max(2, Math.floor((W - izq) / 58))))
 
   return (
     <div className="grafico" ref={ref} onMouseLeave={() => { ocultar(); setActivo(null) }}>
@@ -37,7 +39,7 @@ export default function Columnas({ datos, nombreValor = 'Análisis' }) {
                   d={`M${x},${base} v-${h - r} a${r},${r} 0 0 1 ${r},-${r} h${anchoCol - 2 * r} a${r},${r} 0 0 1 ${r},${r} v${h - r} z`}
                 />
               )}
-              {(i % Math.ceil(datos.length / 7) === 0 || i === datos.length - 1) && (
+              {(datos.length - 1 - i) % cadaCuantas === 0 && (
                 <text className="g-eje" x={cx} y={H - 6} textAnchor="middle">{d.etiqueta}</text>
               )}
               <rect

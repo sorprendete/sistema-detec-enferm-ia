@@ -79,7 +79,7 @@ function TablaUsuarios({ filas, error, onCambiar, cambiando, miId }) {
       {error && <p className="error">{error}</p>}
       {!filas && !error && <p className="vacio">Cargando…</p>}
       {filas && (
-        <div className="tabla-scroll">
+        <div className="tabla-scroll tabla-tarjetas">
           <table>
             <thead>
               <tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Registrado</th><th>Último acceso</th><th aria-label="Acciones" /></tr>
@@ -87,22 +87,24 @@ function TablaUsuarios({ filas, error, onCambiar, cambiando, miId }) {
             <tbody>
               {filas.map((u) => (
                 <tr key={u.id}>
-                  <td>
+                  <td className="celda-principal">
                     <div className="celda-usuario">
                       <span className="avatar">{(u.nombre || u.email || '?').charAt(0).toUpperCase()}</span>
                       <span><strong>{u.nombre || 'Sin nombre'}</strong><span className="tenue">{u.email}</span></span>
                     </div>
                   </td>
-                  <td>{u.rol === 'admin' ? <span className="badge neutro"><KeyRound size={13} />Administrador</span> : 'Usuario'}</td>
-                  <td>
-                    {u.activo
-                      ? <span className="badge sano"><CircleCheck size={13} />Activo</span>
-                      : <span className="badge enfermo"><Ban size={13} />Desactivado</span>}
-                    {u.correo_confirmado === false && <span className="badge atencion" style={{ marginLeft: 6 }}>Correo sin confirmar</span>}
+                  <td data-label="Rol">{u.rol === 'admin' ? <span className="badge neutro"><KeyRound size={13} />Administrador</span> : 'Usuario'}</td>
+                  <td data-label="Estado">
+                    <span className="celda-badges">
+                      {u.activo
+                        ? <span className="badge sano"><CircleCheck size={13} />Activo</span>
+                        : <span className="badge enfermo"><Ban size={13} />Desactivado</span>}
+                      {u.correo_confirmado === false && <span className="badge atencion">Correo sin confirmar</span>}
+                    </span>
                   </td>
-                  <td>{fecha(u.creado_en)}</td>
-                  <td>{fecha(u.ultimo_acceso)}</td>
-                  <td className="num">
+                  <td data-label="Registrado">{fecha(u.creado_en)}</td>
+                  <td data-label="Último acceso">{fecha(u.ultimo_acceso)}</td>
+                  <td className="num celda-acciones">
                     {u.id !== miId && u.rol !== 'admin' && (
                       <button className="boton-sec boton-chico" disabled={cambiando === u.id}
                         onClick={() => onCambiar(u)}>
@@ -177,7 +179,7 @@ function Auditoria() {
       {!filas && !error && <p className="vacio">Cargando…</p>}
       {filas && filas.length === 0 && <p className="vacio">No hay eventos con esos filtros.</p>}
       {filas?.length > 0 && (
-        <div className="tabla-scroll">
+        <div className="tabla-scroll tabla-tarjetas">
           <table>
             <thead>
               <tr><th>Fecha</th><th>Acción</th><th>Estado</th><th>Usuario</th><th>IP</th><th>Navegador</th><th>Detalle</th></tr>
@@ -187,13 +189,16 @@ function Auditoria() {
                 const est = ESTADOS[f.estado] ?? { texto: f.estado, clase: 'neutro' }
                 return (
                   <tr key={f.id}>
-                    <td>{fecha(f.fecha)}</td>
-                    <td>{ACCIONES[f.accion] ?? f.accion}</td>
-                    <td><span className={`badge ${est.clase}`}>{est.texto}</span></td>
-                    <td>{f.email || '—'}</td>
-                    <td><code>{f.ip || '—'}</code></td>
-                    <td title={f.agente}>{dispositivo(f.agente)}</td>
-                    <td className="celda-detalle" title={f.detalle}>{detalle(f.detalle)}</td>
+                    <td data-label="Fecha">{fecha(f.fecha)}</td>
+                    <td className="celda-principal" data-label="Acción">
+                      {ACCIONES[f.accion] ?? f.accion}
+                      <span className={`badge ${est.clase} solo-movil`}>{est.texto}</span>
+                    </td>
+                    <td className="oculta-movil" data-label="Estado"><span className={`badge ${est.clase}`}>{est.texto}</span></td>
+                    <td data-label="Usuario">{f.email || '—'}</td>
+                    <td data-label="IP"><code>{f.ip || '—'}</code></td>
+                    <td data-label="Navegador" title={f.agente}>{dispositivo(f.agente)}</td>
+                    <td className="celda-detalle" data-label="Detalle" title={f.detalle}>{detalle(f.detalle)}</td>
                   </tr>
                 )
               })}

@@ -5,11 +5,12 @@ import InterruptorTema from './InterruptorTema.jsx'
 import MenuUsuario from './MenuUsuario.jsx'
 
 const MENU = [
-  { a: '/', icono: LayoutDashboard, texto: 'Panel', fin: true },
-  { a: '/diagnostico', icono: ScanSearch, texto: 'Diagnóstico' },
-  { a: '/historial', icono: History, texto: 'Historial' },
-  { a: '/modelo', icono: BrainCircuit, texto: 'Modelo y métricas' },
+  { a: '/', icono: LayoutDashboard, texto: 'Panel', corto: 'Panel', fin: true },
+  { a: '/diagnostico', icono: ScanSearch, texto: 'Diagnóstico', corto: 'Diagnóstico' },
+  { a: '/historial', icono: History, texto: 'Historial', corto: 'Historial' },
+  { a: '/modelo', icono: BrainCircuit, texto: 'Modelo y métricas', corto: 'Modelo' },
 ]
+const ADMIN = { a: '/admin', icono: UserCog, texto: 'Usuarios y auditoría', corto: 'Admin' }
 
 export default function Layout() {
   const { esAdmin } = useAuth()
@@ -24,7 +25,7 @@ export default function Layout() {
           </NavLink>
           <InterruptorTema />
         </div>
-        <div>
+        <div className="lateral-menu">
           <p className="menu-titulo">Menú</p>
           <nav className="menu">
             {MENU.map(({ a, icono: Icono, texto, fin }) => (
@@ -49,6 +50,16 @@ export default function Layout() {
         </div>
       </aside>
       <main className="contenido"><Outlet /></main>
+
+      {/* En celulares el menú lateral se reemplaza por esta barra inferior */}
+      <nav className="barra-inferior" aria-label="Navegación principal">
+        {[...MENU, ...(esAdmin ? [ADMIN] : [])].map(({ a, icono: Icono, corto, fin }) => (
+          <NavLink key={a} to={a} end={fin}>
+            <span className="pastilla"><Icono size={20} /></span>
+            {corto}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   )
 }
