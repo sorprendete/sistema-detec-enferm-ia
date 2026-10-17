@@ -1,6 +1,7 @@
-import { Crosshair, Frame, Leaf, LoaderCircle, ScanSearch, Sun } from 'lucide-react'
+import { Leaf, LoaderCircle, ScanSearch } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { ChipsCultivos } from '../components/CultivosSoportados.jsx'
+import GuiaFoto from '../components/GuiaFoto.jsx'
 import ResultadoDiagnostico from '../components/ResultadoDiagnostico.jsx'
 import SubirImagen from '../components/SubirImagen.jsx'
 import { analizarImagen } from '../lib/api'
@@ -38,7 +39,7 @@ export default function Diagnostico() {
       <header className="encabezado">
         <div>
           <h1>Diagnóstico de hojas</h1>
-          <p>Sube la foto de una hoja y el modelo identificará si está sana o qué enfermedad presenta.</p>
+          <p>Sube la foto de una sola hoja y el modelo identificará si está sana o qué enfermedad presenta.</p>
         </div>
       </header>
 
@@ -49,6 +50,7 @@ export default function Diagnostico() {
           <p className="tenue" style={{ margin: '10px 0 16px' }}>
             Si subes una hoja de otra planta o una imagen que no es una hoja, el sistema la rechazará.
           </p>
+          <GuiaFoto />
           <SubirImagen onSeleccion={seleccionar} deshabilitado={analizando} />
           {vista && (
             <div className="vista">
@@ -59,11 +61,6 @@ export default function Diagnostico() {
             </div>
           )}
           {error && <p className="error" style={{ marginTop: 12 }}>{error}</p>}
-          <div className="consejos">
-            <div><Crosshair size={16} /><span>Una sola hoja, centrada y ocupando la mayor parte de la foto.</span></div>
-            <div><Sun size={16} /><span>Buena luz natural, sin sombras fuertes ni flash.</span></div>
-            <div><Frame size={16} /><span>Fondo liso para mejores resultados.</span></div>
-          </div>
         </section>
 
         {resultado ? (

@@ -1,6 +1,7 @@
 import { Ban, ChevronRight, CircleCheck, CircleHelp, ImageOff, Info, Leaf, Lock, Sprout, TriangleAlert } from 'lucide-react'
 import { CULTIVOS, infoClase, nombreLargo } from '../data/enfermedades'
 import BarrasHorizontales from './graficos/BarrasHorizontales.jsx'
+import GuiaFoto from './GuiaFoto.jsx'
 
 const pct = (x) => `${(x * 100).toFixed(1)} %`
 
@@ -37,6 +38,10 @@ function Rechazo({ r }) {
           {CULTIVOS.map((c) => <span key={c.id} className="chip"><Sprout size={14} />{c.nombre}</span>)}
         </div>
       </div>
+      <div>
+        <h3 style={{ marginBottom: 8 }}>¿Sí es pimiento, papa o tomate? Prueba así:</h3>
+        <GuiaFoto compacta />
+      </div>
       <Trazabilidad r={r} />
     </section>
   )
@@ -68,6 +73,7 @@ function NoConcluyente({ r }) {
           hoja, centrada, con buena luz y fondo liso.
         </p>
       </div>
+      <GuiaFoto compacta />
       <details>
         <summary><ChevronRight size={15} className="chevron" />Ver lo que el modelo alcanzó a considerar (no confirmado)</summary>
         <div style={{ marginTop: 10 }}>
@@ -118,7 +124,8 @@ export default function ResultadoDiagnostico({ resultado: r }) {
           <TriangleAlert size={16} />
           <span>
             <strong>Diagnóstico con baja certeza.</strong> {r.motivos_baja_certeza.join('. ')}. Revisa las
-            alternativas y, si es posible, toma otra foto con buena luz y la hoja centrada.
+            alternativas y, si es posible, toma otra foto de <strong>un solo foliolo</strong> (una hojita suelta),
+            de cerca, con buena luz y fondo liso.
           </span>
         </div>
       )}

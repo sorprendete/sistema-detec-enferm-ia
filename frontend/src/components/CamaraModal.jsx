@@ -83,7 +83,7 @@ export default function CamaraModal({ onCaptura, onCerrar }) {
             </>
           )}
         </div>
-        {!error && !foto && <p className="tenue">Centra una sola hoja dentro del recuadro, con buena luz.</p>}
+        {!error && !foto && <p className="tenue">Acerca la cámara a una sola hojita (foliolo) y céntrala en el recuadro, con buena luz.</p>}
 
         <div className="modal-acciones">
           {foto ? (
