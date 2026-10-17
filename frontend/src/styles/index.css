@@ -385,7 +385,8 @@ tbody tr:hover td { background: var(--superficie-2); }
 .modal-cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .modal-acciones { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 .camara { position: relative; background: #000; border-radius: var(--radio-sm); overflow: hidden; aspect-ratio: 4 / 3; display: grid; place-items: center; }
-.camara video, .camara img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* El video y la foto ocupan el recuadro sin recortarse: lo que ves es exactamente lo que se captura */
+.camara video, .camara img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 .camara-guia { position: absolute; inset: 14%; border: 2px dashed rgba(255, 255, 255, .7); border-radius: 12px; pointer-events: none; }
 .camara-error { color: #f1f5f9; text-align: center; padding: 24px; font-size: .9rem; max-width: 420px; }
 
@@ -589,6 +590,9 @@ tbody tr:hover td { background: var(--superficie-2); }
   .modal-fondo { padding: 0; place-items: end stretch; }
   .modal { max-width: none; border-radius: 18px 18px 0 0; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); max-height: 100dvh; overflow-y: auto; }
   .modal-acciones > * { flex: 1 1 0; }
+  /* En celular la cámara es vertical: el recuadro también, para que la vista previa sea grande */
+  .camara { aspect-ratio: 3 / 4; max-height: 62dvh; }
+  .camara-guia { inset: 12% 10%; }
 
   .ficha > div { grid-template-columns: 1fr; gap: 2px; }
   .reglas { grid-template-columns: 1fr; }
