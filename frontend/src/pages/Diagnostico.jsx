@@ -50,7 +50,6 @@ export default function Diagnostico() {
           <p className="tenue" style={{ margin: '10px 0 16px' }}>
             Si subes una hoja de otra planta o una imagen que no es una hoja, el sistema la rechazará.
           </p>
-          <GuiaFoto />
           <SubirImagen onSeleccion={seleccionar} deshabilitado={analizando} />
           {vista && (
             <div className="vista">
@@ -66,12 +65,10 @@ export default function Diagnostico() {
         {resultado ? (
           <ResultadoDiagnostico resultado={resultado} />
         ) : (
-          <section className="tarjeta">
-            <div className="vacio">
-              <div className="vacio-icono"><Leaf size={22} /></div>
-              <strong>Sin resultados todavía</strong>
-              <p>El diagnóstico aparecerá aquí después de analizar una hoja.</p>
-            </div>
+          // Mientras no hay resultado, este panel muestra cómo tomar la foto
+          <section className="tarjeta panel-guia">
+            <GuiaFoto />
+            <p className="guia-pie"><Leaf size={15} />El diagnóstico aparecerá aquí después de analizar la hoja.</p>
           </section>
         )}
       </div>

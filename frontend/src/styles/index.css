@@ -490,6 +490,11 @@ tbody tr:hover td { background: var(--superficie-2); }
 .guia-consejos { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: .82rem; color: var(--texto-2); }
 .guia-consejos li { display: flex; gap: 8px; align-items: center; }
 .guia-consejos svg { color: var(--texto-tenue); }
+.panel-guia .guia-foto { margin: 0; padding: 0; border: 0; background: transparent; gap: 16px; }
+.panel-guia .guia-cabecera strong { font-size: 1rem; }
+.panel-guia .guia-ejemplo { padding: 16px 10px 12px; }
+.panel-guia .guia-ejemplo > svg { max-width: 170px; }
+.guia-pie { display: flex; align-items: center; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--borde); font-size: .82rem; color: var(--texto-tenue); }
 
 /* =============================================================
    Diseño adaptable (tablet y celular)
