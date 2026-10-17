@@ -51,19 +51,33 @@ Decide **antes del diagnóstico** si la imagen es una hoja de pimiento, papa o t
 - **Arquitectura:** Normalización → Dense(128, ReLU) → Dropout(0.3) → Dense(5, softmax).
 - **Salidas:** Pimiento · Papa · Tomate · Otra planta · No es planta.
 - **Regla:** se admite si la clase ganadora es un cultivo soportado **y** P(pimiento + papa + tomate) ≥ 0.70.
-- **Datos:** 5,858 imágenes de PlantVillage (38 clases), PlantDoc (fotos de campo) y muestras de ImageNet. Script: `entrenar_filtro.py`.
-- **SHA-256:** `b40ff883818adc182e783812bb81f4e8481dcad5dbdf675811e2baeedabe1912` (en `backend/modelo/filtro_hash.txt`).
+- **Datos:** 5,858 imágenes reales de PlantVillage (38 clases), PlantDoc (fotos de campo) y muestras de ImageNet, más 4,250 imágenes sintéticas (versión 3). Scripts: `sintetizar_filtro.py` y `entrenar_filtro.py`.
+- **SHA-256:** `e2eac4cab3f747046c1de468cbcba15c6b7765133a366173f403ba1d184ddab8` (en `backend/modelo/filtro_hash.txt`).
 - Se reentrenó junto con el modelo v2, porque usa sus características: si cambia el clasificador, hay que volver a ejecutar `entrenar_filtro.py`.
+
+### Versión 3: imágenes sintéticas
+
+La versión 2 rechazaba como "otra planta" fotos normales de papa: hojas sobre fondo blanco, sobre una mesa de madera o varias hojas juntas. La causa es que en PlantVillage todas las hojas de los tres cultivos están solas y sobre el mismo fondo gris de laboratorio.
+
+`sintetizar_filtro.py` toma la versión recortada (segmented) de PlantVillage y pega las hojas sobre fondos variados (blanco, gris, madera, tierra, tela, fotos desenfocadas) en tres composiciones: una hoja, de 2 a 4 hojas sueltas y una hoja compuesta (tallo con foliolos). Lo hace también con las hojas de **otros** cultivos, para que el fondo no sea una pista y el filtro tenga que fijarse en la hoja. Se generaron 700 imágenes por cultivo y 1,400 de otras plantas, más 150 / 300 para la prueba, con hojas distintas a las de entrenamiento.
 
 ## Evaluación (imágenes que el filtro no vio al entrenar)
 
-| Tipo de imagen | Resultado |
-|---|---|
-| Hojas de pimiento, papa y tomate (PlantVillage) | **98 %** admitidas |
-| Hojas de pimiento, papa y tomate (fotos de campo, PlantDoc) | **87 %** admitidas |
-| Imágenes que no son plantas (ImageNet) | **99 %** rechazadas |
-| Hojas de cultivos presentes en el entrenamiento (manzana, maíz, durazno, fresa…) | **93–100 %** rechazadas |
-| Especies ocultas al filtro en la prueba (uva, cereza, naranja, soya) | **72 %** rechazadas en laboratorio y **83 %** en campo (la soya de laboratorio es la más difícil: 17 %) |
+Misma partición de prueba para las dos versiones; la v2 se reentrenó sin las imágenes de prueba para que la comparación sea justa.
+
+| Tipo de imagen | v2 | v3 |
+|---|---|---|
+| Hojas de pimiento, papa y tomate (PlantVillage), admitidas | 98.4 % | 96.4 % |
+| Hojas de pimiento, papa y tomate (fotos de campo, PlantDoc), admitidas | 87.3 % | 85.3 % |
+| Imágenes que no son plantas (ImageNet), rechazadas | 99.2 % | 98.7 % |
+| Hojas de cultivos presentes en el entrenamiento, rechazadas | 97.2 % | 95.8 % |
+| Especies ocultas al filtro (uva, cereza, naranja, soya), rechazadas en laboratorio | 68.8 % | **85.2 %** |
+| Especies ocultas al filtro, rechazadas en campo | 84.3 % | 86.3 % |
+| Hojas de los 3 cultivos sobre fondos variados (sintéticas de prueba), admitidas | 79.3 % | **94.7 %** |
+| Hojas de otros cultivos sobre fondos variados (sintéticas de prueba), rechazadas | 62.3 % | **86.0 %** |
+| Cultivo correcto en las sintéticas de prueba | 53.8 % | **91.8 %** |
+
+Lectura honesta: la v3 acepta mucho mejor hojas fotografiadas fuera del laboratorio y rechaza mejor especies que no conoce, a cambio de admitir unos 2 puntos menos en PlantVillage y PlantDoc. Sigue fallando con la hoja compuesta entera de papa sobre un fondo con textura; para esos casos, la recomendación al usuario es fotografiar un solo foliolo.
 
 Lectura honesta: el filtro rechaza muy bien imágenes que no son hojas y hojas de los cultivos que conoce. Con especies que nunca vio puede equivocarse; para mejorarlo basta añadir fotos de esas plantas en `dataset_filtro/otra_planta/` y volver a ejecutar `entrenar_filtro.py`. En la versión entregada, esas especies **sí** se incluyeron en el entrenamiento.
 
@@ -75,5 +89,7 @@ El diagnóstico final usa P(clase) ∝ P_clasificador(clase) × P_filtro(cultivo
 |---|---|---|
 | PlantVillage (fondo de laboratorio) | 99.2 % → 99.6 % | 97.2 % → 97.6 % |
 | PlantDoc (fotos de campo) | 82.4 % → 85.3 % | 47.1 % → **50.0 %** |
+
+Con el filtro v3, en PlantDoc queda en 82.4 % → 82.4 % de cultivo correcto y 47.1 % → 48.0 % de clase correcta (PlantVillage no cambia).
 
 Con el modelo v1 la clase correcta en campo era 31.4 % → 36.3 %.

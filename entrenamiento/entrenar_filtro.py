@@ -24,7 +24,11 @@ Fuentes usadas en la versión entregada:
   - PlantDoc      https://github.com/pratikkayal/PlantDoc-Dataset  (fotos de campo, 2,579 imágenes)
   - ImageNet      https://github.com/EliSchwartz/imagenet-sample-images (1 imagen por clase, 1,000 imágenes)
 
+Imágenes sintéticas (versión 3): antes de entrenar, `sintetizar_filtro.py` genera hojas
+sobre fondos variados en dataset_filtro/<categoria>/sinteticas/.
+
 Uso:
+    python sintetizar_filtro.py --segmentadas PlantVillage/raw/segmented --salida dataset_filtro
     python entrenar_filtro.py --datos dataset_filtro
 """
 import argparse
