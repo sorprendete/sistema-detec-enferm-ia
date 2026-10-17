@@ -1,7 +1,9 @@
-import { Ban, CircleCheck, Download, KeyRound, Leaf, LockKeyhole, RefreshCw, ScanSearch, TriangleAlert, Users } from 'lucide-react'
+import { Ban, CircleCheck, Download, KeyRound, Leaf, LockKeyhole, RefreshCw, ScanSearch, ShieldHalf, TriangleAlert, Users } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import Indicador from '../components/Indicador.jsx'
+import DetectorAmenazas from '../components/seguridad/DetectorAmenazas.jsx'
+import MatrizRiesgos from '../components/seguridad/MatrizRiesgos.jsx'
 import { useAuth } from '../context/AuthContext'
 import { nombreLargo } from '../data/enfermedades'
 import { adminAuditoria, adminCambiarEstado, adminResumen, adminUsuarios } from '../lib/api'
@@ -224,6 +226,8 @@ export default function Admin() {
   const [errorUsuarios, setErrorUsuarios] = useState('')
   const [cambiando, setCambiando] = useState(null)
   const [aviso, setAviso] = useState('')
+  const [parametros, setParametros] = useSearchParams()
+  const vista = parametros.get('vista') === 'seguridad' ? 'seguridad' : 'usuarios'
 
   const cargarUsuarios = useCallback(() => {
     adminUsuarios().then(setUsuarios).catch((e) => setErrorUsuarios(e.message))
@@ -253,14 +257,32 @@ export default function Admin() {
       <header className="encabezado">
         <div>
           <h1>Administración</h1>
-          <p>Usuarios, estadísticas de uso y registro de accesos del sistema.</p>
+          <p>Usuarios, registro de accesos y seguridad del sistema.</p>
         </div>
       </header>
+      <nav className="pestanas" aria-label="Secciones de administración">
+        <button type="button" className={vista === 'usuarios' ? 'activa' : ''} onClick={() => setParametros({}, { replace: true })}>
+          <Users size={16} />Usuarios y auditoría
+        </button>
+        <button type="button" className={vista === 'seguridad' ? 'activa' : ''}
+          onClick={() => setParametros({ vista: 'seguridad' }, { replace: true })}>
+          <ShieldHalf size={16} />Amenazas y riesgos
+        </button>
+      </nav>
       {aviso && <div className="tarjeta aviso-admin"><TriangleAlert size={16} />{aviso}</div>}
-      <Resumen datos={resumen} />
-      <TablaUsuarios filas={usuarios} error={errorUsuarios} onCambiar={cambiar} cambiando={cambiando} miId={usuario?.id} />
-      <div style={{ height: 16 }} />
-      <Auditoria />
+      {vista === 'seguridad' ? (
+        <>
+          <DetectorAmenazas />
+          <MatrizRiesgos />
+        </>
+      ) : (
+        <>
+          <Resumen datos={resumen} />
+          <TablaUsuarios filas={usuarios} error={errorUsuarios} onCambiar={cambiar} cambiando={cambiando} miId={usuario?.id} />
+          <div style={{ height: 16 }} />
+          <Auditoria />
+        </>
+      )}
     </>
   )
 }

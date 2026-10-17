@@ -127,3 +127,42 @@ def test_admin_no_puede_desactivarse_a_si_mismo(entorno, monkeypatch):
     r = c.post("/admin/usuarios/u-admin/estado", json={"activo": False},
                headers={"Authorization": f"Bearer {token('u-admin')}"})
     assert r.status_code == 400
+
+
+def test_admin_amenazas_simuladas(entorno, monkeypatch):
+    c, _ = entorno
+
+    async def rol_de(usuario):
+        return "admin"
+
+    monkeypatch.setattr(roles, "rol_de", rol_de)
+    r = c.get("/admin/amenazas?simulado=true", headers={"Authorization": f"Bearer {token('u-admin')}"})
+    d = r.json()
+    assert r.status_code == 200 and d["fuente"] == "simulado" and d["resumen"]["alto"] >= 3
+    # Un usuario normal no puede verlo
+    async def rol_usuario(usuario):
+        return "usuario"
+
+    monkeypatch.setattr(roles, "rol_de", rol_usuario)
+    assert c.get("/admin/amenazas?simulado=true",
+                 headers={"Authorization": f"Bearer {token('u-normal')}"}).status_code == 403
+
+
+def test_admin_amenazas_lee_la_auditoria_paginada(entorno, monkeypatch):
+    c, _ = entorno
+    pedidos = []
+
+    async def rol_de(usuario):
+        return "admin"
+
+    async def consultar(tok, tabla, params):
+        pedidos.append(params)
+        n = 1000 if len(pedidos) == 1 else 3
+        return [{"fecha": "2026-10-01T10:00:00+00:00", "accion": "login", "estado": "exito",
+                 "email": "a@b.com", "ip": f"10.0.0.{i % 50}", "agente": "Mozilla/5.0"} for i in range(n)]
+
+    monkeypatch.setattr(roles, "rol_de", rol_de)
+    monkeypatch.setattr(admin_router, "consultar", consultar)
+    d = c.get("/admin/amenazas?dias=3", headers={"Authorization": f"Bearer {token('u-admin')}"}).json()
+    assert d["fuente"] == "real" and d["resumen"]["eventos"] == 1003
+    assert [p["offset"] for p in pedidos] == ["0", "1000"]

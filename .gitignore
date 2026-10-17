@@ -19,7 +19,14 @@ dist/
 entrenamiento/dataset/
 entrenamiento/salidas/
 entrenamiento/dataset_filtro/
+# Copia de seguridad del modelo anterior (no se usa en producción)
+entrenamiento/modelo_v1/
 
 # Sistema
 .DS_Store
 Thumbs.db
+desktop.ini
+*.log
+
+# Salidas de los scripts de seguridad
+reporte_seguridad/

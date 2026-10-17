@@ -33,3 +33,4 @@ Administrador ──► /admin (rol verificado en el backend y otra vez en Postg
 | 11 | Bloqueo por fuerza bruta: 5 contraseñas incorrectas de un correo lo bloquean 15 min; límite de intentos por IP | `backend/app/security/fuerza_bruta.py`, `backend/app/routers/auth.py` |
 | 12 | Registro de auditoría de accesos (login, registro, logout, análisis, acciones del admin) con IP y navegador; solo lo escribe el servidor y solo lo lee el admin | `backend/app/services/auditoria.py`, `database/administracion.sql` |
 | 13 | Control de acceso por roles: un único administrador; el usuario no puede cambiar su propio rol (permiso por columna) | `backend/app/security/roles.py`, `database/administracion.sql` |
+| 14 | Detección de amenazas en la auditoría: reglas por umbral + Isolation Forest (ML no supervisado), con matriz de riesgos y analizador de logs. Detalle en [`seguridad.md`](seguridad.md) | `backend/app/services/amenazas.py`, `seguridad/` |

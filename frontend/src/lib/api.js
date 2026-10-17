@@ -50,6 +50,8 @@ export function adminAuditoria({ accion = '', estado = '', limite = 100, desde =
   return pedir(`/admin/auditoria?${q}`)
 }
 export const adminCambiarEstado = (id, activo) => pedir(`/admin/usuarios/${id}/estado`, json({ activo }))
+export const adminAmenazas = ({ dias = 7, simulado = false } = {}) =>
+  pedir(`/admin/amenazas?${new URLSearchParams({ dias, simulado })}`)
 
 export function analizarImagen(archivo, exigencia) {
   const form = new FormData()

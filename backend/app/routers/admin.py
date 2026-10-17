@@ -9,7 +9,7 @@ from app.config import get_settings
 from app.schemas.auth import CambioEstado
 from app.security.auth import Usuario
 from app.security.roles import admin_actual
-from app.services import auditoria, supabase_auth
+from app.services import amenazas, auditoria, simulacion, supabase_auth
 from app.services.supabase_db import actualizar_como_servicio, consultar, contar
 
 router = APIRouter(prefix="/admin", tags=["administración"])
@@ -112,3 +112,34 @@ async def cambiar_estado(user_id: str, datos: CambioEstado, request: Request,
         request, "admin", "exito", user_id=admin.id, email=admin.email,
         detalle=f"Cuenta {filas[0]['email']} {'activada' if datos.activo else 'desactivada'}."))
     return {"id": user_id, "activo": datos.activo}
+
+
+@router.get("/amenazas")
+async def detectar_amenazas(
+    dias: int = Query(7, ge=1, le=90),
+    simulado: bool = False,
+    admin: Usuario = Depends(admin_actual),
+):
+    """Analiza la auditoría con reglas + Isolation Forest y devuelve las IPs sospechosas.
+
+    simulado=true usa tráfico de prueba (services/simulacion.py) sin leer ni escribir la base
+    de datos, para la demostración cuando todavía hay poco historial real.
+    """
+    if simulado:
+        eventos = simulacion.generar(dias=dias)
+    else:
+        desde = (datetime.now(timezone.utc) - timedelta(days=dias)).isoformat()
+        eventos, pagina = [], 1000
+        try:
+            while len(eventos) < 20_000:  # Supabase devuelve como máximo 1000 filas por consulta
+                lote = await consultar(admin.token, "auditoria", {
+                    "select": "fecha,accion,estado,email,ip,agente", "fecha": f"gte.{desde}",
+                    "order": "fecha.asc", "limit": str(pagina), "offset": str(len(eventos))})
+                eventos += lote
+                if len(lote) < pagina:
+                    break
+        except Exception as e:
+            log.error("Amenazas: %s", e)
+            raise HTTPException(502, "No se pudo leer el registro de auditoría.")
+    informe = await asyncio.to_thread(amenazas.analizar, eventos)
+    return {"fuente": "simulado" if simulado else "real", "dias": dias, **informe}

@@ -16,6 +16,7 @@ backend/        API de IA (verificación SHA-256, /predict, /historial, login au
 frontend/       Interfaz web (login, registro, diagnóstico, historial, administración)
 database/       SQL de tablas, políticas RLS, roles/auditoría y limpieza de datos
 entrenamiento/  Notebook de Colab, generador de hash y métricas
+seguridad/      Matriz de riesgos y analizador de la auditoría (reglas + Isolation Forest)
 docs/           Arquitectura, seguridad y guía de despliegue
 ```
 
@@ -23,4 +24,5 @@ docs/           Arquitectura, seguridad y guía de despliegue
 
 - Ejecutar en local y desplegar: [`docs/despliegue.md`](docs/despliegue.md)
 - Controles de seguridad: [`docs/arquitectura.md`](docs/arquitectura.md)
+- Matriz de riesgos y detección de amenazas con ML: [`docs/seguridad.md`](docs/seguridad.md)
 - Verificar la integridad del modelo: `python entrenamiento/generar_hash.py --verificar`

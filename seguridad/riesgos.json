@@ -1,0 +1,105 @@
+{
+  "escala": {
+    "probabilidad": ["Muy baja", "Baja", "Media", "Alta", "Muy alta"],
+    "impacto": ["Mínimo", "Menor", "Moderado", "Mayor", "Crítico"],
+    "niveles": {"alto": 15, "medio": 8}
+  },
+  "riesgos": [
+    {
+      "id": "R1", "activo": "Cuentas de usuario", "amenaza": "Ataque de fuerza bruta o prueba de contraseñas",
+      "vulnerabilidad": "Contraseñas débiles o reutilizadas", "pilar": "Confidencialidad",
+      "probabilidad": 4, "impacto": 4,
+      "controles": ["Política de contraseña segura en el registro", "Bloqueo de 15 min tras 5 intentos fallidos", "Auditoría de cada inicio de sesión", "Detector de amenazas con ML"],
+      "tipo_control": "Preventivo y detectivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 4}, "pendiente": "Activar MFA (TOTP) en Supabase"
+    },
+    {
+      "id": "R2", "activo": "Modelo de IA (modelo_plantas.keras)", "amenaza": "Reemplazo o alteración del modelo",
+      "vulnerabilidad": "Archivo del modelo modificable en el servidor", "pilar": "Integridad",
+      "probabilidad": 3, "impacto": 5,
+      "controles": ["SHA-256 verificado antes de cargar (el servidor no arranca si no coincide)", "Modelo en solo lectura dentro del contenedor", "Imagen del contenedor construida por GitHub Actions"],
+      "tipo_control": "Preventivo y correctivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 1, "impacto": 5}, "pendiente": null
+    },
+    {
+      "id": "R3", "activo": "Clave secreta de Supabase", "amenaza": "Filtración de la clave de servicio",
+      "vulnerabilidad": "Clave copiada en código, capturas o mensajes", "pilar": "Confidencialidad",
+      "probabilidad": 3, "impacto": 5,
+      "controles": ["Solo en .env y en los secretos de Azure", ".env excluido de Git", "Nunca se envía al navegador"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 5}, "pendiente": "Rotar la clave si alguna vez se compartió"
+    },
+    {
+      "id": "R4", "activo": "Historial de diagnósticos", "amenaza": "Un usuario ve o modifica datos de otro",
+      "vulnerabilidad": "Control de acceso incorrecto (OWASP A01)", "pilar": "Confidencialidad",
+      "probabilidad": 3, "impacto": 4,
+      "controles": ["Row Level Security en Supabase", "JWT verificado en cada petición", "Rol de administrador comprobado en el servidor"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 1, "impacto": 4}, "pendiente": null
+    },
+    {
+      "id": "R5", "activo": "Servidor de la API", "amenaza": "Subida de un archivo malicioso disfrazado de imagen",
+      "vulnerabilidad": "Entrada de archivos sin validar", "pilar": "Integridad",
+      "probabilidad": 3, "impacto": 4,
+      "controles": ["Tipo real por firma binaria (JPEG, PNG, WebP)", "Límite de 5 MB y 25 megapíxeles", "Contenedor con usuario sin privilegios"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 1, "impacto": 4}, "pendiente": null
+    },
+    {
+      "id": "R6", "activo": "Servicio de diagnóstico", "amenaza": "Saturación del servicio (DoS)",
+      "vulnerabilidad": "Inferencia costosa en CPU", "pilar": "Disponibilidad",
+      "probabilidad": 3, "impacto": 3,
+      "controles": ["Límite de 20 análisis por minuto por usuario", "Solo usuarios autenticados pueden analizar", "Escalado de réplicas en Azure"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 3}, "pendiente": "Firewall de aplicaciones (WAF) delante de la API"
+    },
+    {
+      "id": "R7", "activo": "Decisión del agricultor", "amenaza": "Diagnóstico erróneo (falso positivo)",
+      "vulnerabilidad": "Fotos de campo distintas a las de entrenamiento", "pilar": "Integridad",
+      "probabilidad": 4, "impacto": 3,
+      "controles": ["Filtro de cultivo que rechaza otras plantas", "Nivel de exigencia: no diagnostica bajo el umbral", "Aviso de baja certeza y las 3 opciones más probables"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 3}, "pendiente": null
+    },
+    {
+      "id": "R8", "activo": "Modelo de IA", "amenaza": "Sondeo del modelo con imágenes manipuladas",
+      "vulnerabilidad": "El modelo responde a cualquier imagen", "pilar": "Integridad",
+      "probabilidad": 2, "impacto": 3,
+      "controles": ["Cada análisis queda en la auditoría", "El detector con ML marca el sondeo", "Límite de peticiones por usuario"],
+      "tipo_control": "Detectivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 2}, "pendiente": null
+    },
+    {
+      "id": "R9", "activo": "Base de datos (usuarios e historial)", "amenaza": "Pérdida de datos por borrado o falla",
+      "vulnerabilidad": "Sin copias de seguridad propias", "pilar": "Disponibilidad",
+      "probabilidad": 2, "impacto": 4,
+      "controles": ["Código y modelos versionados en GitHub", "Esquema de la base de datos en database/*.sql"],
+      "tipo_control": "Correctivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 4}, "pendiente": "Respaldo semanal de la base de datos (pg_dump) fuera de Supabase"
+    },
+    {
+      "id": "R10", "activo": "Cuenta de administrador", "amenaza": "Phishing o ingeniería social",
+      "vulnerabilidad": "Una sola contraseña protege el panel de administración", "pilar": "Confidencialidad",
+      "probabilidad": 3, "impacto": 4,
+      "controles": ["Un único administrador", "Toda acción de administración queda auditada"],
+      "tipo_control": "Detectivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 3, "impacto": 3}, "pendiente": "MFA obligatorio para el administrador"
+    },
+    {
+      "id": "R11", "activo": "Datos en tránsito", "amenaza": "Interceptación del tráfico (hombre en el medio)",
+      "vulnerabilidad": "Conexiones sin cifrar", "pilar": "Confidencialidad",
+      "probabilidad": 2, "impacto": 4,
+      "controles": ["HTTPS en Vercel y Azure", "Cabecera HSTS", "CORS limitado al dominio de la aplicación"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 1, "impacto": 4}, "pendiente": null
+    },
+    {
+      "id": "R12", "activo": "Dependencias del software", "amenaza": "Librería con una vulnerabilidad conocida",
+      "vulnerabilidad": "Software desactualizado", "pilar": "Integridad",
+      "probabilidad": 3, "impacto": 3,
+      "controles": ["Versiones fijadas en requirements.txt y package-lock.json", "Imagen reconstruida en cada cambio"],
+      "tipo_control": "Preventivo", "tratamiento": "Mitigar",
+      "residual": {"probabilidad": 2, "impacto": 3}, "pendiente": "Activar Dependabot en GitHub"
+    }
+  ]
+}

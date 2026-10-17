@@ -706,3 +706,95 @@ tbody tr:hover td { background: var(--superficie-2); }
 .exigencia-aviso { margin: -4px 0 0; padding: 8px 12px; border-radius: var(--radio-sm); background: var(--aviso-fondo);
   border: 1px solid var(--aviso-borde); color: var(--aviso-texto); font-size: .8rem; }
 .exigencia-titulo, .exigencia-valor { white-space: nowrap; }
+
+/* ---------- Administración: pestañas y controles segmentados ---------- */
+.pestanas { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--borde); overflow-x: auto; scrollbar-width: none; }
+.pestanas button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; margin-bottom: -1px; border: 0;
+  border-bottom: 2px solid transparent; border-radius: 0; background: none; color: var(--texto-2); font-weight: 600;
+  font-size: .9rem; white-space: nowrap; box-shadow: none; width: auto; min-height: 0; }
+.pestanas button:hover { background: none; color: var(--texto); }
+.pestanas button.activa { color: var(--marca); border-bottom-color: var(--marca); }
+.segmentado { display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px; background: var(--hover); border: 1px solid var(--borde); }
+.segmentado button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 0; border-radius: 8px;
+  background: none; color: var(--texto-2); font-size: .84rem; font-weight: 600; box-shadow: none; width: auto; min-height: 0; }
+.segmentado button:hover { background: none; color: var(--texto); }
+.segmentado button.activo { background: var(--superficie); color: var(--texto); box-shadow: var(--sombra); }
+.interruptor { flex-direction: row; align-items: center; gap: 8px; font-size: .84rem; color: var(--texto-2); cursor: pointer; }
+.interruptor input { flex: none; width: 16px; height: 16px; min-height: 0; margin: 0; padding: 0; accent-color: var(--marca); }
+
+/* ---------- Detección de amenazas ---------- */
+.amenaza-motivos { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; white-space: normal; }
+.amenaza-regla { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; padding: 3px 9px; border-radius: 6px;
+  background: var(--aviso-fondo); color: var(--aviso-texto); border: 1px solid var(--aviso-borde); font-size: .78rem; font-weight: 600; }
+.amenaza-regla.grave { background: var(--critico-fondo); color: var(--critico-texto); border-color: var(--critico-borde); }
+.amenaza-regla em { font-style: normal; font-weight: 400; opacity: .85; }
+.amenaza-ml { display: inline-flex; gap: 6px; align-items: flex-start; padding: 4px 9px; border-radius: 6px; font-size: .78rem; line-height: 1.4;
+  background: color-mix(in srgb, var(--sec-400) 10%, var(--superficie)); color: var(--sec-550);
+  border: 1px solid color-mix(in srgb, var(--sec-400) 30%, transparent); }
+.amenaza-ml svg { flex: none; margin-top: 2px; }
+.puntaje-ml { position: relative; display: inline-flex; align-items: center; width: 92px; height: 22px; border-radius: 6px;
+  background: var(--rejilla); overflow: hidden; }
+.puntaje-ml i { position: absolute; inset: 0 auto 0 0; background: var(--borde-fuerte); }
+.puntaje-ml.alto i { background: color-mix(in srgb, var(--critico) 55%, transparent); }
+.puntaje-ml strong { position: relative; padding-left: 8px; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--texto); }
+.como-funciona { display: flex; flex-direction: column; gap: 2px; color: var(--texto-2); max-width: 900px; }
+
+/* ---------- Matriz de riesgos ---------- */
+.riesgo-resumen { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+.riesgo-resumen .tenue { display: inline-flex; align-items: center; gap: 4px; font-size: .78rem; }
+.riesgo-cifra { display: flex; flex-direction: column; gap: 2px; min-width: 104px; padding: 8px 14px; border-radius: var(--radio-sm); border: 1px solid; }
+.riesgo-cifra span { font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.riesgo-cifra strong { display: inline-flex; align-items: center; gap: 6px; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.riesgo-cifra strong svg { opacity: .6; }
+.riesgo-cifra.alto { background: var(--critico-fondo); color: var(--critico-texto); border-color: var(--critico-borde); }
+.riesgo-cifra.medio { background: var(--aviso-fondo); color: var(--aviso-texto); border-color: var(--aviso-borde); }
+.riesgo-cifra.bajo { background: var(--bien-fondo); color: var(--bien-texto); border-color: var(--bien-borde); }
+.matriz-riesgos { display: flex; gap: 6px; max-width: 640px; }
+.mr-eje-y { display: flex; align-items: center; justify-content: center; width: 18px; }
+.mr-eje-y span { transform: rotate(-90deg); font-size: .78rem; font-weight: 600; color: var(--texto-2); white-space: nowrap; }
+.mr-cuerpo { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mr-fila { display: grid; grid-template-columns: 74px repeat(5, minmax(0, 1fr)); gap: 4px; }
+.mr-etiqueta-y, .mr-eje-x span { display: flex; flex-direction: column; justify-content: center; font-size: .78rem; font-weight: 600;
+  color: var(--texto-2); line-height: 1.2; }
+.mr-etiqueta-y em, .mr-eje-x em { font-style: normal; font-weight: 400; font-size: .68rem; color: var(--texto-tenue); }
+.mr-eje-x span { align-items: center; text-align: center; padding-top: 2px; }
+.mr-titulo-x { text-align: center; font-size: .78rem; font-weight: 600; color: var(--texto-2); padding-left: 78px; }
+.mr-celda { position: relative; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: 4px;
+  aspect-ratio: 1.35; padding: 14px 4px 4px; border-radius: 6px; }
+.mr-celda.alto { background: var(--critico-fondo); border: 1px solid var(--critico-borde); }
+.mr-celda.medio { background: var(--aviso-fondo); border: 1px solid var(--aviso-borde); }
+.mr-celda.bajo { background: var(--bien-fondo); border: 1px solid var(--bien-borde); }
+.mr-valor { position: absolute; top: 3px; right: 6px; font-size: .66rem; color: var(--texto-tenue); font-variant-numeric: tabular-nums; }
+.mr-punto { padding: 2px 7px; border-radius: 999px; border: 1px solid var(--borde-fuerte); background: var(--superficie); color: var(--texto);
+  font-size: .72rem; font-weight: 700; box-shadow: var(--sombra); width: auto; min-height: 0; cursor: pointer; }
+.mr-punto:hover { background: var(--hover); }
+.mr-punto.activo { background: var(--texto); color: var(--superficie); border-color: var(--texto); }
+.riesgo-amenaza { display: block; color: var(--texto); font-weight: 600; }
+.riesgo-controles { margin: 0; padding-left: 16px; font-size: .8rem; color: var(--texto-2); white-space: normal; }
+.riesgo-pendiente { display: inline-block; margin-top: 6px; font-size: .76rem; color: var(--aviso-texto); }
+tr.fila-activa td { background: color-mix(in srgb, var(--marca) 7%, transparent); }
+@media (max-width: 640px) {
+  .mr-fila { grid-template-columns: 30px repeat(5, minmax(0, 1fr)); gap: 3px; }
+  .mr-etiqueta-y em, .mr-eje-x em { display: none; }
+  .mr-titulo-x { padding-left: 34px; }
+  .mr-celda { aspect-ratio: 1; padding: 12px 2px 2px; gap: 2px; }
+  .mr-punto { padding: 1px 4px; font-size: .64rem; }
+  .riesgo-cifra { min-width: 0; flex: 1; }
+  .segmentado { width: 100%; }
+  .segmentado button { flex: 1; justify-content: center; }
+}
+.tabla-riesgos td, .tabla-amenazas td { white-space: normal; vertical-align: top; }
+.tabla-riesgos td.celda-detalle, .tabla-amenazas td.celda-detalle { max-width: none; overflow: visible; text-overflow: clip; }
+.tabla-riesgos td:nth-child(2) { min-width: 220px; }
+.tabla-riesgos td.celda-detalle { min-width: 260px; }
+.tabla-amenazas td.celda-detalle { min-width: 300px; }
+@media (max-width: 640px) {
+  .tabla-riesgos td:nth-child(2), .tabla-riesgos td.celda-detalle, .tabla-amenazas td.celda-detalle { min-width: 0; }
+  /* Contenido largo: la etiqueta arriba y el texto a todo el ancho, alineado a la izquierda */
+  .tabla-riesgos td:nth-child(2), .tabla-tarjetas.tabla-riesgos td.celda-detalle, .tabla-tarjetas.tabla-amenazas td.celda-detalle {
+    display: flex; flex-direction: column; align-items: stretch; text-align: left; gap: 6px; }
+  .tabla-riesgos td:nth-child(2)::before, .tabla-riesgos td.celda-detalle::before, .tabla-amenazas td.celda-detalle::before { margin-bottom: 2px; }
+  .tabla-amenazas .amenaza-motivos { align-items: stretch; }
+  .tabla-amenazas .amenaza-regla, .tabla-amenazas .amenaza-ml { text-align: left; justify-content: flex-start; }
+  .tabla-riesgos td:nth-child(2) { order: -1; }
+}
