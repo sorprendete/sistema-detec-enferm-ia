@@ -66,6 +66,12 @@ function NoConcluyente({ r }) {
         <Info size={16} />
         <span>{r.mensaje}</span>
       </div>
+      {r.umbral != null && (
+        <p className="tenue">
+          La confianza ({pct(r.confianza)}) no alcanzó el nivel de exigencia de {Math.round(r.umbral * 100)} %.
+          Si la foto es de campo y no puedes tomar otra mejor, puedes bajar el nivel y volver a analizar.
+        </p>
+      )}
       <div>
         <h3 style={{ marginBottom: 8 }}>Recomendación</h3>
         <p className="recomendacion">
@@ -113,6 +119,7 @@ export default function ResultadoDiagnostico({ resultado: r }) {
         <div className="medidor-barra"><div style={{ width: pct(r.confianza) }} /></div>
         <div className="medidor-fila tenue">
           <span>Cultivo identificado por el filtro: <strong>{r.cultivo_detectado}</strong></span>
+          {r.umbral != null && <span>Nivel de exigencia: {Math.round(r.umbral * 100)} %</span>}
           {r.confianza_clasificador != null && Math.abs(r.confianza_clasificador - r.confianza) > 0.05 && (
             <span>Clasificador solo: {pct(r.confianza_clasificador)}</span>
           )}

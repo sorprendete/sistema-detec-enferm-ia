@@ -119,3 +119,20 @@ def test_condicion_no_contemplada_no_da_falso_positivo(client, monkeypatch):
     d = r.json()
     assert d["admitida"] is True and d["concluyente"] is False
     assert d["clase"] == "No_concluyente" and d["enfermedad"] is None and d["mensaje"]
+
+
+def test_nivel_de_exigencia_elegido_por_el_usuario(client):
+    # La misma foto que da ~84 %: con exigencia 95 % no se emite diagnóstico; con 60 % sí
+    h = lambda u: {"Authorization": f"Bearer {token(u)}"}
+    archivo = lambda: {"imagen": ("helada.jpg", foto("papa_helada.jpg"), "image/jpeg")}
+    estricto = client.post("/predict", headers=h("u20"), files=archivo(), data={"umbral": "0.95"}).json()
+    assert estricto["concluyente"] is False and estricto["umbral"] == 0.95
+    flexible = client.post("/predict", headers=h("u21"), files=archivo(), data={"umbral": "0.60"}).json()
+    assert flexible["concluyente"] is True and flexible["umbral"] == 0.60
+
+
+@pytest.mark.parametrize("valor", ["0.2", "0.99", "abc"])
+def test_nivel_de_exigencia_fuera_de_rango_se_rechaza(client, valor):
+    r = client.post("/predict", headers={"Authorization": f"Bearer {token('u22' + valor)}"},
+                    files={"imagen": ("h.png", imagen_png(), "image/png")}, data={"umbral": valor})
+    assert r.status_code == 422

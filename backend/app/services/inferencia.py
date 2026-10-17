@@ -88,7 +88,8 @@ def evaluar_filtro(estado: ModeloCargado, caracteristicas: np.ndarray) -> dict:
     }
 
 
-def predecir(estado: ModeloCargado, imagen: Image.Image, top_k: int = 3) -> dict:
+def predecir(estado: ModeloCargado, imagen: Image.Image, top_k: int = 3, umbral: float | None = None) -> dict:
+    """umbral: confianza mínima para emitir diagnóstico; si no se indica, la de la configuración."""
     entrada = preprocesar(imagen)
     caracteristicas, probs = estado.extractor.predict(entrada, verbose=0)
 
@@ -114,7 +115,8 @@ def predecir(estado: ModeloCargado, imagen: Image.Image, top_k: int = 3) -> dict
     ]
     mejor = top[0]
     cultivo, enfermedad = separar_nombre(mejor["clase"])
-    umbral = get_settings().umbral_confianza
+    if umbral is None:
+        umbral = get_settings().umbral_confianza
 
     motivos = []
     if mejor["confianza"] < umbral:
@@ -135,6 +137,7 @@ def predecir(estado: ModeloCargado, imagen: Image.Image, top_k: int = 3) -> dict
         return {
             **filtro,
             "concluyente": False,
+            "umbral": umbral,
             "mensaje": MENSAJE_NO_CONCLUYENTE,
             "clase": NO_CONCLUYENTE,
             "cultivo": cultivo,
@@ -150,6 +153,7 @@ def predecir(estado: ModeloCargado, imagen: Image.Image, top_k: int = 3) -> dict
     return {
         **filtro,
         "concluyente": True,
+        "umbral": umbral,
         "clase": mejor["clase"],
         "indice": mejor["indice"],
         "cultivo": cultivo,

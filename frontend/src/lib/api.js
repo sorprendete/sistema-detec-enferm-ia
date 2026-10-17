@@ -51,9 +51,11 @@ export function adminAuditoria({ accion = '', estado = '', limite = 100, desde =
 }
 export const adminCambiarEstado = (id, activo) => pedir(`/admin/usuarios/${id}/estado`, json({ activo }))
 
-export function analizarImagen(archivo) {
+export function analizarImagen(archivo, exigencia) {
   const form = new FormData()
   form.append('imagen', archivo)
+  // Nivel de exigencia en % (barra de Diagnóstico); el backend espera 0-1
+  if (exigencia != null) form.append('umbral', String(exigencia / 100))
   return pedir('/predict', { method: 'POST', body: form })
 }
 

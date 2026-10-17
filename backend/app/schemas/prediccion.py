@@ -19,6 +19,7 @@ class RespuestaPrediccion(BaseModel):
     # Diagnóstico (solo si la imagen fue admitida)
     id_analisis: str | None = None
     concluyente: bool | None = None  # False: confianza bajo el umbral, no se emite diagnóstico
+    umbral: float | None = None  # nivel de exigencia aplicado en este análisis
     clase: str | None = None
     indice: int | None = None
     cultivo: str | None = None

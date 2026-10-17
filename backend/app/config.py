@@ -40,6 +40,10 @@ class Settings(BaseSettings):
 
     # Inferencia
     umbral_confianza: float = 0.75  # por debajo no se emite diagnóstico (resultado no concluyente)
+    # Rango en que el usuario puede mover ese umbral desde la barra "Nivel de exigencia".
+    # Bajo 50 % el diagnóstico sería casi un sorteo entre dos clases, por eso no se permite.
+    umbral_confianza_min: float = 0.50
+    umbral_confianza_max: float = 0.95
     imagen_tam: int = 224
     # Filtro de cultivo: probabilidad mínima de que sea pimiento, papa o tomate
     umbral_filtro: float = 0.70

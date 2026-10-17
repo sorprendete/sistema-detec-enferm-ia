@@ -74,7 +74,7 @@ export default function Modelo() {
             <li><ChevronRight size={15} /><span><strong>Mejores clases:</strong> pimiento sano (99.7 %) y virus del rizado amarillo (99.0 %).</span></li>
             <li><ChevronRight size={15} /><span><strong>Más difíciles:</strong> tizón temprano (90.3 %, se confunde con tizón tardío y mancha diana), mancha diana (90.6 %) y virus del mosaico (91.3 %, en campo se confunde con moho de la hoja).</span></li>
             <li><ChevronRight size={15} /><span>Si el diagnóstico es una de esas tres enfermedades, el sistema lo marca con <strong>baja certeza</strong>.</span></li>
-            <li><ChevronRight size={15} /><span>Si la confianza es menor al 75 %, <strong>no emite diagnóstico</strong> (resultado no concluyente) para evitar falsos positivos con problemas que el modelo no conoce, como la helada.</span></li>
+            <li><ChevronRight size={15} /><span>Si la confianza es menor al nivel de exigencia (75 % por defecto, ajustable entre 50 % y 95 % con la barra de Diagnóstico), <strong>no emite diagnóstico</strong> (resultado no concluyente) para evitar falsos positivos con problemas que el modelo no conoce, como la helada.</span></li>
             <li><ChevronRight size={15} /><span>En fotos reales acierta aproximadamente <strong>1 de cada 2</strong>: úsalo como apoyo, no como diagnóstico definitivo.</span></li>
             <li><ChevronRight size={15} /><span>Antes de clasificar, un <strong>filtro de cultivo</strong> rechaza hojas que no son de tomate, papa o pimiento.</span></li>
           </ul>
