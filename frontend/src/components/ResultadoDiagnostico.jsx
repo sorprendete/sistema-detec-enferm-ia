@@ -2,6 +2,7 @@ import { Ban, ChevronRight, CircleCheck, CircleHelp, ImageOff, Info, Leaf, Lock,
 import { CULTIVOS, infoClase, nombreLargo } from '../data/enfermedades'
 import BarrasHorizontales from './graficos/BarrasHorizontales.jsx'
 import GuiaFoto from './GuiaFoto.jsx'
+import GuiaTratamiento from './GuiaTratamiento.jsx'
 
 const pct = (x) => `${(x * 100).toFixed(1)} %`
 
@@ -80,6 +81,9 @@ function NoConcluyente({ r }) {
         </p>
       </div>
       <GuiaFoto compacta />
+      {r.top3?.[0] && (
+        <GuiaTratamiento clase={r.top3[0].clase} nombre={infoClase(r.top3[0].clase).nombre.toLowerCase()} posible />
+      )}
       <details>
         <summary><ChevronRight size={15} className="chevron" />Ver lo que el modelo alcanzó a considerar (no confirmado)</summary>
         <div style={{ marginTop: 10 }}>
@@ -141,6 +145,8 @@ export default function ResultadoDiagnostico({ resultado: r }) {
         <h3 style={{ marginBottom: 8 }}>Recomendación</h3>
         <p className="recomendacion">{info.recomendacion}</p>
       </div>
+
+      <GuiaTratamiento clase={r.clase} nombre={info.nombre} />
 
       <div>
         <h3 style={{ marginBottom: 4 }}>Probabilidad por diagnóstico</h3>

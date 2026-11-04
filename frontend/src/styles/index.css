@@ -798,3 +798,69 @@ tr.fila-activa td { background: color-mix(in srgb, var(--marca) 7%, transparent)
   .tabla-amenazas .amenaza-regla, .tabla-amenazas .amenaza-ml { text-align: left; justify-content: flex-start; }
   .tabla-riesgos td:nth-child(2) { order: -1; }
 }
+
+/* =============================================================
+   Guía de tratamiento
+   ============================================================= */
+.tratamiento { display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: var(--radio); background: var(--superficie-2); border: 1px solid var(--borde); }
+.trat-cab { display: flex; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.trat-cab > div { flex: 1; min-width: 160px; }
+.trat-cab h3 { font-size: .98rem; }
+.trat-cab p { margin-top: 2px; font-size: .82rem; }
+.trat-cab-icono { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--marca-suave); color: var(--marca); border: 1px solid var(--marca-borde); flex-shrink: 0; }
+.trat-bloque { border: 1px solid var(--borde); border-radius: var(--radio-sm); background: var(--superficie); padding: 10px 12px; }
+.trat-bloque summary { color: var(--texto); font-weight: 600; font-size: .88rem; }
+.trat-bloque .trat-icono { color: var(--marca); }
+.trat-bloque ul { margin: 8px 0 2px; padding-left: 20px; display: grid; gap: 5px; color: var(--texto-2); font-size: .86rem; line-height: 1.5; }
+.trat-bloque li::marker { color: var(--marca); }
+.trat-bloque.cuidado { background: var(--aviso-fondo); border-color: var(--aviso-borde); }
+.trat-bloque.cuidado summary, .trat-bloque.cuidado .trat-icono, .trat-bloque.cuidado ul, .trat-bloque.cuidado li::marker { color: var(--aviso-texto); }
+.trat-pie { font-size: .78rem; line-height: 1.5; }
+
+/* =============================================================
+   Fondo dinámico
+   ============================================================= */
+:root { --mancha-1: #4ade80; --mancha-2: #2dd4bf; --mancha-3: #a3e635; --mancha-4: #22c55e; --mancha-opacidad: .36; --hoja-opacidad: .22; }
+:root[data-theme='dark'] { --mancha-opacidad: .26; --hoja-opacidad: .18; --mancha-1: #16a34a; --mancha-2: #0d9488; --mancha-3: #65a30d; --mancha-4: #15803d; }
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) { --mancha-opacidad: .26; --hoja-opacidad: .18; --mancha-1: #16a34a; --mancha-2: #0d9488; --mancha-3: #65a30d; --mancha-4: #15803d; }
+}
+
+.fondo-dinamico { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.mancha { position: absolute; border-radius: 50%; filter: blur(70px); opacity: var(--mancha-opacidad); will-change: transform; }
+.mancha.m1 { width: 46vmax; height: 46vmax; background: var(--mancha-1); top: -14vmax; left: -10vmax; animation: deriva-1 26s ease-in-out infinite alternate; }
+.mancha.m2 { width: 40vmax; height: 40vmax; background: var(--mancha-2); bottom: -16vmax; right: -12vmax; animation: deriva-2 32s ease-in-out infinite alternate; }
+.mancha.m3 { width: 30vmax; height: 30vmax; background: var(--mancha-3); top: 30%; left: 45%; animation: deriva-3 38s ease-in-out infinite alternate; }
+.mancha.m4 { width: 26vmax; height: 26vmax; background: var(--mancha-4); bottom: 10%; left: 8%; animation: deriva-2 44s ease-in-out infinite alternate-reverse; }
+.fondo-puntos {
+  position: absolute; inset: 0; opacity: .5;
+  background-image: radial-gradient(color-mix(in srgb, var(--marca) 22%, transparent) 1px, transparent 1.4px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%); mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+.hoja-flotante { position: absolute; bottom: -60px; color: var(--marca); opacity: var(--hoja-opacidad); animation: flotar linear infinite; will-change: transform; }
+@keyframes deriva-1 { to { transform: translate(18vw, 14vh) scale(1.15); } }
+@keyframes deriva-2 { to { transform: translate(-16vw, -12vh) scale(1.1); } }
+@keyframes deriva-3 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20vw, 10vh) scale(1.2); } 100% { transform: translate(10vw, -16vh) scale(.9); } }
+@keyframes flotar {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(40px, -55vh) rotate(160deg); }
+  100% { transform: translate(-30px, calc(-100vh - 120px)) rotate(340deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mancha, .hoja-flotante { animation: none; }
+  .hoja-flotante { display: none; }
+}
+
+/* La interfaz queda por encima del fondo y deja ver el color a través */
+.app, .auth { position: relative; z-index: 1; }
+.app { background: transparent; }
+.lateral {
+  background: color-mix(in srgb, var(--superficie) 82%, transparent);
+  -webkit-backdrop-filter: saturate(1.5) blur(16px); backdrop-filter: saturate(1.5) blur(16px);
+}
+.tarjeta { background: color-mix(in srgb, var(--superficie) 94%, transparent); }
+.auth { background: transparent; }
+.auth-form { background: transparent; }
+@media (max-width: 1100px) and (min-width: 901px) { .app { background: transparent; } }
+@media (max-width: 900px) { .app { background: transparent; } }
